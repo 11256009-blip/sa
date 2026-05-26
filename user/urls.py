@@ -9,3 +9,5 @@ urlpatterns = [
     path('edit/<int:user_id>/', user_edit_view, name='user-edit'),
     path('delete/<int:user_id>/', user_delete_view, name='user-delete'),
 ]
+
+//123456
