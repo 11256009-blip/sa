@@ -38,10 +38,10 @@
 <body>
 <div class="layout">
     <aside class="sidebar">
-        <h1>圖書館線上管理</h1>
+        <h1><a href="/">圖書館線上管理系統</a></h1>
         <p class="menu-title">選單</p>
         <a href="/users/">使用者管理</a>
-        <a href="#">館藏管理</a>
+        <a href="{% url 'book-list' %}">館藏管理</a>
         <a href="#">借還書/預約</a>
         <div class="spacer"></div>
         {% if user.is_authenticated %}
