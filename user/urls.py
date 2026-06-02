@@ -10,3 +10,4 @@ urlpatterns = [
     path('delete/<int:user_id>/', user_delete_view, name='user-delete'),
 ]
 
+//123456
