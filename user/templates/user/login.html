@@ -42,7 +42,24 @@
                 <div class="errorlist">{{ form.password.errors }}</div>
             {% endif %}
         </div>
-        <button type="submit">登入</button>
+        <button type="submit" name="action" value="login">登入</button>
+    </form>
+    
+    <hr style="margin:20px 0;border:none;border-top:1px solid #e5e7eb;">
+
+    <h2 style="font-size:1.2rem;margin-bottom:12px;color:#111827;">註冊新帳號</h2>
+    <form method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+        {% for field in register_form %}
+            <div class="field">
+                {{ field.label_tag }}
+                {{ field }}
+                {% if field.errors %}
+                    <div class="errorlist">{{ field.errors }}</div>
+                {% endif %}
+            </div>
+        {% endfor %}
+        <button type="submit" name="action" value="register">註冊並登入</button>
     </form>
 </div>
 </body>

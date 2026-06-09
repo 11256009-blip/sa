@@ -72,13 +72,28 @@ def user_login_view(request):
     if request.user.is_authenticated:
         return redirect('/')
 
-    form = AuthenticationForm(request, data=request.POST or None)
-    if request.method == 'POST' and form.is_valid():
-        user = form.get_user()
-        login(request, user)
-        return redirect('/')
+    # 支援同頁登入與註冊：根據按鈕 `action` 決定處理路徑
+    login_form = AuthenticationForm(request, data=request.POST or None)
+    register_form = CustomUserCreationForm(request.POST or None)
 
-    return render(request, 'user/login.html', {'form': form})
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        if action == 'login' and login_form.is_valid():
+            user = login_form.get_user()
+            login(request, user)
+            return redirect('/')
+
+        if action == 'register' and register_form.is_valid():
+            new_user = register_form.save()
+            messages.success(request, '註冊成功，已自動登入。')
+            login(request, new_user)
+            return redirect('/')
+
+    return render(request, 'user/login.html', {
+        'form': login_form,
+        'register_form': register_form,
+        'next': request.GET.get('next', ''),
+    })
 
 
 @login_required
