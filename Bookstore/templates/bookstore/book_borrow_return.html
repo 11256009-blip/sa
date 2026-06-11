@@ -120,7 +120,7 @@
                                                         <ul style="margin:0;padding-left:16px;list-style:disc;color:#374151;">
                                                             {% for r in book.borrow_records.all %}
                                                                 {% if r.action == 'borrow' and r.status == 'active' %}
-                                                                    <li style="margin-bottom:6px;">{{ r.user.username }} <small style="color:#6b7280;margin-left:8px;">{{ r.created_at|date:'m/d H:i' }}</small></li>
+                                                                    <li style="margin-bottom:6px;">{{ r.user.username }} <small style="color:#6b7280;margin-left:8px;">{{ r.created_at|date:'m/d H:i' }} → {{ r.due_date|date:'m/d' }}</small></li>
                                                                 {% endif %}
                                                             {% endfor %}
                                                             {% comment %} 若沒有任何 active borrow，顯示提示文字（但不破壞列表） {% endcomment %}

@@ -1,5 +1,7 @@
 from django.conf import settings
 from django.db import models
+from django.utils import timezone
+from datetime import timedelta
 
 
 class Book(models.Model):
@@ -32,7 +34,9 @@ class BorrowRecord(models.Model):
     action = models.CharField('操作類型', max_length=10, choices=Action.choices)
     status = models.CharField('狀態', max_length=10, choices=Status.choices, default=Status.ACTIVE)
     created_at = models.DateTimeField('建立時間', auto_now_add=True)
+    due_date = models.DateTimeField('預期歸還日期', null=True, blank=True)
     returned_at = models.DateTimeField('完成時間', null=True, blank=True)
+    is_overdue_notified = models.BooleanField('已通知逾期', default=False)
 
     class Meta:
         ordering = ['-created_at']
@@ -41,3 +45,16 @@ class BorrowRecord(models.Model):
 
     def __str__(self):
         return f"{self.user} {self.get_action_display()} {self.book.title}"
+
+    def save(self, *args, **kwargs):
+        # 新建借閱記錄時，自動設定預期歸還日期為 7 天後
+        if self.action == self.Action.BORROW and not self.due_date and not self.pk:
+            self.due_date = timezone.now() + timedelta(days=7)
+        super().save(*args, **kwargs)
+
+    @property
+    def is_overdue(self):
+        """檢查是否逾期"""
+        if self.status == self.Status.ACTIVE and self.due_date:
+            return timezone.now() > self.due_date
+        return False

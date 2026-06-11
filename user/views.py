@@ -5,7 +5,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect, get_object_or_404
 
-from .forms import CustomUserChangeForm, CustomUserCreationForm, UserSelfEditForm
+from .forms import CustomUserChangeForm, CustomUserCreationForm, UserSelfEditForm, UserRegistrationForm
 
 
 @login_required
@@ -74,7 +74,7 @@ def user_login_view(request):
 
     # 支援同頁登入與註冊：根據按鈕 `action` 決定處理路徑
     login_form = AuthenticationForm(request, data=request.POST or None)
-    register_form = CustomUserCreationForm(request.POST or None)
+    register_form = UserRegistrationForm(request.POST or None)
 
     if request.method == 'POST':
         action = request.POST.get('action')
