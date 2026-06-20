@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>首頁 - 圖書館線上管理</title>
+    <style>
+        body { margin: 0; font-family: Arial, sans-serif; background: #e4e7ec; color: #1f2937; }
+        .layout { display: flex; min-height: 100vh; }
+        .sidebar { width: 220px; background: #1f3a72; color: white; display: flex; flex-direction: column; }
+        .sidebar h1 { font-size: 1.1rem; margin: 24px 20px 16px; letter-spacing: 0.05em; }
+        .sidebar .menu-title { margin: 0 20px 12px; color: #a8c3ff; font-size: 0.95rem; }
+        .sidebar a { text-decoration: none; color: white; display: block; padding: 12px 20px; margin: 4px 12px; border-radius: 8px; }
+        .sidebar a:hover { background: rgba(255,255,255,0.12); }
+        .sidebar .spacer { flex: 1; }
+        .sidebar .logout { margin: 16px 12px 24px; padding: 12px 20px; background: #f87171; border-radius: 8px; text-align: center; }
+        .sidebar .logout:hover { background: #ef4444; }
+        .content { flex: 1; padding: 28px; }
+        .top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+        .top h2 { margin: 0; font-size: 1.5rem; }
+        .top .user-info { font-size: 0.95rem; color: #374151; }
+        .card { background: white; border-radius: 18px; padding: 28px; box-shadow: 0 18px 32px rgba(15,23,42,0.08); }
+        .card h1 { margin-top: 0; font-size: 2rem; }
+        .card p { margin: 12px 0 0; color: #475569; line-height: 1.7; }
+        .logout-fixed { position: fixed; bottom: 24px; right: 24px; }
+        .logout-fixed a { display: inline-block; padding: 12px 18px; background: #f87171; color: white; text-decoration: none; border-radius: 8px; box-shadow: 0 12px 24px rgba(248,113,113,0.2); }
+        .logout-fixed a:hover { background: #ef4444; }
+    </style>
+</head>
+<body>
+    
+<div class="layout">
+    <aside class="sidebar">
+        <h1><a href="/">圖書館線上管理系統</a></h1>
+        <p class="menu-title">選單</p>
+        
+            <a href="/books/borrow-return/">借還書/預約</a>
+            <a href="/users/profile/">我的帳戶</a>
+        
+        <div class="spacer"></div>
+    </aside>
+    <main class="content">
+        <div class="top">
+            <h2>首頁</h2>
+            <div class="user-info">當前登入：尚未登入</div>
+        </div>
+                <div class="card">
+                        <img src="/static/bookstore/images/home.jpg" alt="首頁圖" style="max-width:100%; border-radius:12px; margin-bottom:16px; display:block;">
+                        <h1>歡迎使用圖書館線上管理系統</h1>
+                        <p>請從左側選單選擇要進行的操作。</p>
+                </div>
+    </main>
+    
+<div style="position:fixed;bottom:20px;left:20px;z-index:9999;">
+    
+        <a href="/login/" aria-label="登入" title="登入" style="display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;background:#2563eb;color:#fff;text-decoration:none;border-radius:999px;box-shadow:0 8px 18px rgba(37,99,235,0.14);">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M8 17L3 12L8 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M3 12H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M16 5h1a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </a>
+    
+</div>
+
+</div>
+</body>
+</html>

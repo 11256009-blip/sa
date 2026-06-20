@@ -22,12 +22,15 @@
         .card { background: white; border-radius: 18px; padding: 28px; box-shadow: 0 18px 32px rgba(15,23,42,0.08); }
         .card h1 { margin-top: 0; font-size: 2rem; }
         .card p { margin: 12px 0 0; color: #475569; line-height: 1.7; }
+        .home-image { text-align: center; margin-top: 24px; clear: both; }
+        .home-image img { max-width: 80%; border-radius: 12px; display: block; margin: 0 auto; }
         .logout-fixed { position: fixed; bottom: 24px; right: 24px; }
         .logout-fixed a { display: inline-block; padding: 12px 18px; background: #f87171; color: white; text-decoration: none; border-radius: 8px; box-shadow: 0 12px 24px rgba(248,113,113,0.2); }
         .logout-fixed a:hover { background: #ef4444; }
     </style>
 </head>
 <body>
+    {% load static %}
 <div class="layout">
     <aside class="sidebar">
         <h1><a href="/">圖書館線上管理系統</a></h1>
@@ -47,12 +50,34 @@
             <h2>首頁</h2>
             <div class="user-info">當前登入：{% if user.is_authenticated %}{{ user.username }}{% else %}尚未登入{% endif %}</div>
         </div>
-        <div class="card">
-            <h1>歡迎使用圖書館線上管理系統</h1>
-            <p>請從左側選單選擇要進行的操作。</p>
-        </div>
+                <div class="card">
+                    <h1>歡迎使用圖書館線上管理系統</h1>
+                    <p>請從左側選單選擇要進行的操作。</p>
+                    <div class="home-image">
+                        <img id="home-move-img" src="{% static 'bookstore/images/home.jpg' %}" alt="首頁圖" style="display:block; clear:both !important; margin:24px auto 0 !important; position:static !important; max-width:80% !important;">
+                    </div>
+                </div>
     </main>
     {% include 'user/logout_fixed.html' %}
 </div>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    try{
+        console.log('home.js loaded');
+        const card = document.querySelector('.card');
+        if(!card) return;
+        const para = card.querySelector('p');
+        const img = card.querySelector('img[alt="首頁圖"], img[src*="home.jpg"], img[src*="home.svg"]');
+        console.log('home.img pre-check', {img: !!img, para: !!para, imgParent: img && img.parentElement && img.parentElement.className});
+        if(img && para){
+            para.after(img);
+            console.log('home.img moved, new parent:', img.parentElement && img.parentElement.className);
+            img.style.display = 'block';
+            img.style.margin = '16px auto 0';
+            img.style.maxWidth = img.style.maxWidth || '80%';
+        }
+    }catch(e){ /* ignore */ }
+});
+</script>
 </body>
 </html>

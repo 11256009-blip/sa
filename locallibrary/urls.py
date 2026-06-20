@@ -28,3 +28,10 @@ urlpatterns = [
     path('books/', include('Bookstore.urls')),
     path('users/', include('user.urls')),
 ]
+
+from django.conf import settings
+from django.conf.urls.static import static
+import os
+
+# During development, also serve the app's static directory explicitly
+urlpatterns += static(settings.STATIC_URL, document_root=str(settings.BASE_DIR / 'Bookstore' / 'static'))
