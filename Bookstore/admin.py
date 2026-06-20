@@ -83,3 +83,6 @@ class BorrowRecordAdmin(admin.ModelAdmin):
         queryset = super().get_queryset(request)
         return queryset.select_related('user', 'book')
 
+
+
+#123456
