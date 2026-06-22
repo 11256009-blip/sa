@@ -7,7 +7,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 
 from .forms import CustomUserChangeForm, CustomUserCreationForm, UserSelfEditForm, UserRegistrationForm
 
-
+# 管理員專用的使用者管理介面
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
 def user_management_view(request):
@@ -24,7 +24,7 @@ def user_management_view(request):
         'form': form,
     })
 
-
+# 超級管理員可以看得使用這列表跟
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
 def user_list_view(request):
@@ -33,7 +33,7 @@ def user_list_view(request):
         'users': users,
     })
 
-
+# 超級管理員可以更改使用者資料
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
 def user_edit_view(request, user_id):
@@ -52,7 +52,7 @@ def user_edit_view(request, user_id):
         'edit_user': user_obj,
     })
 
-
+# 超級管理員可以新增使用者
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
 def user_create_view(request):
@@ -68,6 +68,7 @@ def user_create_view(request):
     return render(request, 'user/user_form.html', {'form': form})
 
 
+# 登入跟註冊
 def user_login_view(request):
     if request.user.is_authenticated:
         return redirect('/')
@@ -95,7 +96,7 @@ def user_login_view(request):
         'next': request.GET.get('next', ''),
     })
 
-
+# 使用者編輯自己的資料
 @login_required
 def user_self_edit_view(request):
     if request.method == 'POST':
@@ -111,7 +112,7 @@ def user_self_edit_view(request):
         'form': form,
     })
 
-
+# 管理員刪除使用者
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
 def user_delete_view(request, user_id):
@@ -127,7 +128,7 @@ def user_delete_view(request, user_id):
         'delete_user': user_obj,
     })
 
-
+# 登出
 def user_logout_view(request):
     logout(request)
     return redirect('/')

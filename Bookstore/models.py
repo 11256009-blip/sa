@@ -20,6 +20,9 @@ class Book(models.Model):
 
 
 class BorrowRecord(models.Model):
+    DUE_DAYS = 7
+    WARNING_DAYS = 2
+
     class Action(models.TextChoices):
         BORROW = 'borrow', '借閱'
         RESERVE = 'reserve', '預約'
@@ -49,7 +52,7 @@ class BorrowRecord(models.Model):
     def save(self, *args, **kwargs):
         # 新建借閱記錄時，自動設定預期歸還日期為 7 天後
         if self.action == self.Action.BORROW and not self.due_date and not self.pk:
-            self.due_date = timezone.now() + timedelta(days=7)
+            self.due_date = timezone.now() + timedelta(days=self.DUE_DAYS)
         super().save(*args, **kwargs)
 
     @property
@@ -58,3 +61,34 @@ class BorrowRecord(models.Model):
         if self.status == self.Status.ACTIVE and self.due_date:
             return timezone.now() > self.due_date
         return False
+
+    @property
+    def days_overdue(self):
+        """回傳逾期天數，未逾期則為 0。"""
+        if not self.is_overdue:
+            return 0
+        return (timezone.now().date() - self.due_date.date()).days
+
+    @property
+    def days_until_due(self):
+        """回傳距離到期的天數；已逾期或沒有到期日則回傳 None。"""
+        if self.status != self.Status.ACTIVE or not self.due_date or self.is_overdue:
+            return None
+        return (self.due_date.date() - timezone.now().date()).days
+
+    @property
+    def is_due_soon(self):
+        """檢查是否即將到期。"""
+        days_left = self.days_until_due
+        return days_left is not None and days_left <= self.WARNING_DAYS
+
+    @property
+    def warning_level(self):
+        """提供後台和管理指令共用的預警等級。"""
+        if self.action != self.Action.BORROW or self.status != self.Status.ACTIVE:
+            return 'none'
+        if self.is_overdue:
+            return 'overdue'
+        if self.is_due_soon:
+            return 'due_soon'
+        return 'normal'
