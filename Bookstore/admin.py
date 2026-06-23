@@ -11,7 +11,7 @@ class BookAdmin(admin.ModelAdmin):
     search_fields = ('isbn', 'title', 'category')
     list_filter = ('category',)
 
-# 自訂篩選器：顯示逾期記錄
+# 篩選器：顯示逾期記錄
 class OverdueListFilter(admin.SimpleListFilter):
     """自訂篩選：顯示到期與逾期狀態"""
     title = '到期狀態'

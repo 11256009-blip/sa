@@ -100,6 +100,7 @@ def borrow_book_view(request, pk):
     if request.method != 'POST':
         return redirect('book-borrow-return')
 
+    # 借閱前先檢查庫存，沒有庫存就不建立借閱紀錄。
     if book.quantity <= 0:
         messages.error(request, '此書目前無可借閱庫存。')
         return redirect('book-borrow-return')
@@ -113,8 +114,11 @@ def borrow_book_view(request, pk):
     else:
         user = request.user
 
+    # 借出一本書時，先扣掉書籍庫存。
     book.quantity -= 1
     book.save()
+
+    # 在資料庫新增一筆借閱紀錄；BorrowRecord.save() 會自動設定 7 天後到期。
     BorrowRecord.objects.create(
         user=user,
         book=book,
@@ -130,6 +134,7 @@ def reserve_book_view(request, pk):
     if request.method != 'POST':
         return redirect('book-borrow-return')
 
+    # 管理員可以替其他使用者預約；一般使用者只能替自己預約。
     if request.user.is_superuser:
         user_id = request.POST.get('user_id')
         if user_id:
@@ -139,6 +144,7 @@ def reserve_book_view(request, pk):
     else:
         user = request.user
 
+    # 在資料庫新增一筆預約紀錄；預約不會扣庫存，也不會設定歸還期限。
     BorrowRecord.objects.create(
         user=user,
         book=book,
@@ -151,14 +157,21 @@ def reserve_book_view(request, pk):
 @login_required
 def return_book_view(request, pk):
     record = get_object_or_404(BorrowRecord, pk=pk)
+
+    # 一般使用者只能歸還自己的借閱紀錄；管理員可以處理所有人的紀錄。
     if not request.user.is_superuser and record.user != request.user:
         return redirect('book-borrow-return')
+
+    # 只有進行中的借閱紀錄可以被歸還，預約或已完成的紀錄不處理。
     if request.method != 'POST' or record.action != BorrowRecord.Action.BORROW or record.status != BorrowRecord.Status.ACTIVE:
         return redirect('book-borrow-return')
 
+    # 歸還時更新原本的借閱紀錄，不新增新紀錄。
     record.status = BorrowRecord.Status.RETURNED
     record.returned_at = timezone.now()
     record.save()
+
+    # 書籍歸還後，把庫存加回去。
     book = record.book
     book.quantity += 1
     book.save()
@@ -169,11 +182,16 @@ def return_book_view(request, pk):
 @login_required
 def cancel_reservation_view(request, pk):
     record = get_object_or_404(BorrowRecord, pk=pk)
+
+    # 一般使用者只能取消自己的預約；管理員可以處理所有人的預約。
     if not request.user.is_superuser and record.user != request.user:
         return redirect('book-borrow-return')
+
+    # 只有進行中的預約紀錄可以取消。
     if request.method != 'POST' or record.action != BorrowRecord.Action.RESERVE or record.status != BorrowRecord.Status.ACTIVE:
         return redirect('book-borrow-return')
 
+    # 取消預約時更新原本紀錄的狀態，不刪除紀錄，保留操作歷史。
     record.status = BorrowRecord.Status.CANCELLED
     record.returned_at = record.created_at
     record.save()
