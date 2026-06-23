@@ -1,0 +1,36 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if book %}編輯書籍{% else %}新增書籍{% endif %}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        label { display: block; margin-top: 12px; font-weight: bold; }
+        input, textarea, select { width: 100%; max-width: 500px; padding: 8px; margin-top: 4px; }
+        button, .cancel-link { margin-top: 16px; padding: 10px 18px; border-radius: 6px; }
+        button { background: #2563eb; color: white; border: none; cursor: pointer; }
+        .cancel-link { display: inline-block; margin-left: 12px; background: #6b7280; color: white; text-decoration: none; }
+    </style>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body class="app-page">
+    <header class="app-titlebar">
+        <h1>{% if book %}編輯書籍{% else %}新增書籍{% endif %}</h1>
+        <div class="user-info">{% if user.is_authenticated %}{{ user.username }}{% else %}訪客{% endif %} 您好！</div>
+    </header>
+
+    <div class="container">
+    <h1>{% if book %}編輯書籍{% else %}新增書籍{% endif %}</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">儲存書籍</button>
+        <a href="{% url 'book-list' %}" class="cancel-link">取消</a>
+    </form>
+    </div>
+    {% include 'user/logout_fixed.html' %}
+</body>
+</html>

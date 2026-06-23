@@ -1,0 +1,263 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>借還書管理</title>
+    <style>
+        body { margin: 0; font-family: Arial, sans-serif; background: #e4e7ec; color: #1f2937; }
+        .layout { display: flex; min-height: 100vh; }
+        .sidebar { width: 220px; background: #1f3a72; color: white; display: flex; flex-direction: column; }
+        .sidebar h1 { font-size: 1.1rem; margin: 24px 20px 16px; letter-spacing: 0.05em; }
+        .sidebar h1 a { color: white; text-decoration: none; background: transparent; display: block; }
+        .sidebar .menu-title { margin: 0 20px 12px; color: #a8c3ff; font-size: 0.95rem; }
+        .sidebar a { text-decoration: none; color: white; display: block; padding: 12px 20px; margin: 4px 12px; border-radius: 8px; }
+        .sidebar a:hover { background: rgba(255,255,255,0.12); }
+        .sidebar a.active { background: rgba(255,255,255,0.18); }
+        .sidebar .spacer { flex: 1; }
+        .sidebar .logout { margin: 16px 12px 24px; padding: 12px 20px; background: #f87171; border-radius: 8px; text-align: center; }
+        .sidebar .logout:hover { background: #ef4444; }
+        .content { flex: 1; padding: 28px; }
+        .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+        .page-title { font-size: 1.8rem; letter-spacing: 0.12em; margin: 0; }
+        .page-user { color: #4b5563; font-size: 0.95rem; }
+        .main-card { background: #f8fafc; border-radius: 24px; padding: 28px; box-shadow: 0 18px 32px rgba(15,23,42,0.08); }
+        .tab-row { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 26px; }
+        .tab-button { flex: 1; min-width: 160px; padding: 12px 18px; border: 2px solid #d1d5db; border-radius: 14px; text-align: center; text-decoration: none; font-weight: 700; color: #374151; background: #fff; transition: all 0.2s ease; cursor: pointer; border: none; }
+        .tab-button.active { border: 2px solid #84cc16; color: #111827; background: #f6fff0; }
+        .tab-button.info { border: 2px solid #93c5fd; color: #1d4ed8; background: #eff6ff; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .section-title { margin: 0 0 18px; font-size: 1.1rem; font-weight: 700; }
+        .toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
+        .search-wrap { flex: 1; min-width: 240px; display: flex; gap: 10px; }
+        .search-wrap input { flex: 1; padding: 12px 16px; border: 1px solid #d1d5db; border-radius: 999px; background: white; outline: none; }
+        .search-wrap input:focus { border-color: #2563eb; }
+        .btn-search, .btn-action { padding: 12px 18px; border-radius: 999px; border: none; cursor: pointer; font-weight: 700; }
+        .btn-search { background: #1f2937; color: white; }
+        .btn-action { background: #2563eb; color: white; }
+        .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+        .panel { background: white; border-radius: 24px; padding: 24px; border: 1px solid #e2e8f0; }
+        .panel-title { margin: 0 0 18px; font-size: 1rem; font-weight: 700; color: #111827; }
+        .message-list { margin-bottom: 18px; }
+        .message { padding: 14px 18px; border-radius: 16px; margin-bottom: 10px; font-weight: 700; }
+        .message.success { background: #dcfce7; color: #166534; }
+        .message.error { background: #fee2e2; color: #991b1b; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 16px 14px; text-align: left; border-bottom: 1px solid #e5e7eb; }
+        th { background: #edf2f7; color: #475569; font-weight: 700; }
+        tbody tr:hover { background: #f8fafc; }
+        .action-links { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+        .action-links form { margin: 0; }
+        .btn-borrow, .btn-return, .btn-action { padding: 8px 14px; border-radius: 12px; border: none; color: white; cursor: pointer; font-weight: 700; }
+        .btn-borrow { background: #16a34a; }
+        .btn-return { background: #f59e0b; }
+        .btn-disabled { background: #94a3b8; cursor: not-allowed; }
+        .empty-state { padding: 24px; border-radius: 18px; background: #f8fafc; border: 1px solid #e2e8f0; color: #475569; text-align: center; }
+        @media (max-width: 960px) { .content { padding: 20px; } .tab-row, .toolbar, .grid { flex-direction: column; } .grid { grid-template-columns: 1fr; } .sidebar { width: 200px; } }
+    </style>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body>
+<div class="layout">
+    <aside class="sidebar">
+        <h1><a href="/">圖書館管理系統</a></h1>
+        <p class="menu-title">選單</p>
+        {% if user.is_superuser %}
+            <a href="/users/">使用者管理</a>
+            <a href="{% url 'book-list' %}">館藏管理</a>
+            <a class="active" href="{% url 'book-borrow-return' %}">館藏查詢/預約</a>
+        {% else %}
+            <a class="active" href="{% url 'book-borrow-return' %}">館藏查詢/預約</a>
+            <a href="{% url 'user-profile' %}">我的帳戶</a>
+        {% endif %}
+        <div class="spacer"></div>
+    </aside>
+    <main class="content">
+        <div class="page-header">
+            <div class="page-title">館藏查詢/預約</div>
+            <div class="page-user">{% if user.is_authenticated %}{{ user.username }}{% else %}訪客{% endif %} 您好！</div>
+        </div>
+        <div class="main-card">
+            <div class="tab-row">
+                <button class="tab-button active" onclick="switchTab('query')">館藏查詢</button>
+                <button class="tab-button info" onclick="switchTab('reserve')">預約清單</button>
+            </div>
+            <div class="toolbar" id="query-toolbar">
+                <form method="get" class="search-wrap">
+                    <input type="text" name="q" value="{{ query }}" placeholder="搜尋書號(ISBN)或書名..." aria-label="搜尋書籍">
+                    <button class="btn-search" type="submit">搜尋</button>
+                </form>
+            </div>
+            <div class="toolbar" id="reserve-toolbar" style="display:none;">
+                <h3 style="margin:0; color:#374151;">我的借閱和預約紀錄</h3>
+            </div>
+            {% if messages %}
+                <div class="message-list">
+                    {% for message in messages %}
+                        <div class="message {{ message.tags }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            
+            <!-- 館藏查詢 Tab -->
+            <div id="query-content" class="tab-content active" style="width:100%;">
+                <section class="panel">
+                    <h2 class="panel-title">可借書籍</h2>
+                    {% if books %}
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ISBN</th>
+                                    <th>書名</th>
+                                    <th>分類</th>
+                                    <th>庫存</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for book in books %}
+                                    <tr>
+                                        <td>{{ book.isbn }}</td>
+                                        <td>{{ book.title }}</td>
+                                        <td>{{ book.category }}</td>
+                                        <td>{{ book.quantity }}</td>
+                                        <td>
+                                            <div class="action-links" style="align-items:flex-start;gap:16px;">
+                                                <div style="min-width:220px;max-width:340px;font-size:0.95rem;color:#111827;">
+                                                    <div style="margin-bottom:8px;">
+                                                        <strong style="display:block;color:#991b1b;margin-bottom:6px;">借閱中</strong>
+                                                        <ul style="margin:0;padding-left:16px;list-style:disc;color:#374151;">
+                                                            {% for r in book.borrow_records.all %}
+                                                                {% if r.action == 'borrow' and r.status == 'active' %}
+                                                                    <li style="margin-bottom:6px;">{{ r.user.username }} <small style="color:#6b7280;margin-left:8px;">{{ r.created_at|date:'m/d H:i' }} → {{ r.due_date|date:'m/d' }}</small></li>
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                            {% comment %} 若沒有任何 active borrow，顯示提示文字（但不破壞列表） {% endcomment %}
+                                                            {% with has_borrow=False %}{% endwith %}
+                                                        </ul>
+                                                    </div>
+
+                                                    <div>
+                                                        <strong style="display:block;color:#1d4ed8;margin-bottom:6px;">預約清單</strong>
+                                                        <div style="max-height:120px;overflow:auto;padding-right:6px;border-radius:8px;">
+                                                            <ul style="margin:0;padding-left:16px;color:#374151;">
+                                                                {% for r in book.borrow_records.all %}
+                                                                    {% if r.action == 'reserve' and r.status == 'active' %}
+                                                                        <li style="margin-bottom:6px;">{{ r.user.username }} <small style="color:#6b7280;margin-left:8px;">{{ r.created_at|date:'m/d H:i' }}</small></li>
+                                                                    {% endif %}
+                                                                {% endfor %}
+                                                                {# 若無任何預約則顯示提示文字 #}
+                                                                {% comment %} Show a fallback if no reserve entries exist {% endcomment %}
+                                                                {% if not book.borrow_records.all %}
+                                                                    <li style="color:#6b7280;">目前無預約</li>
+                                                                {% endif %}
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div style="display:flex;flex-direction:column;gap:8px;">
+                                                    {% if book.quantity > 0 %}
+                                                        <form method="post" action="{% url 'book-borrow' book.pk %}">
+                                                            {% csrf_token %}
+                                                            <button class="btn-borrow" type="submit">借閱</button>
+                                                        </form>
+                                                    {% else %}
+                                                        <button class="btn-borrow btn-disabled" type="button" disabled>借閱</button>
+                                                    {% endif %}
+
+                                                    <form method="post" action="{% url 'book-reserve' book.pk %}">
+                                                        {% csrf_token %}
+                                                        <button class="btn-return" type="submit">預約</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% else %}
+                        <div class="empty-state">目前沒有可顯示的書籍，請先新增書籍後再進行借還操作。</div>
+                    {% endif %}
+                </section>
+            </div>
+            
+            <!-- 預約清單 Tab -->
+            <div id="reserve-content" class="tab-content" style="width:100%;">
+                <section class="panel">
+                    <h2 class="panel-title">借閱中 / 預約清單</h2>
+                    {% if records %}
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>使用者</th>
+                                    <th>書名</th>
+                                    <th>類型</th>
+                                    <th>狀態</th>
+                                    <th>建立時間</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for record in records %}
+                                    <tr>
+                                        <td>{{ record.user.username }}</td>
+                                        <td>{{ record.book.title }}</td>
+                                        <td>{% if record.action == 'borrow' %}借閱{% else %}預約{% endif %}</td>
+                                        <td>{{ record.get_status_display }}</td>
+                                        <td>{{ record.created_at|date:'Y-m-d H:i' }}</td>
+                                        <td>
+                                            <div class="action-links">
+                                                {% if record.action == 'borrow' and record.status == 'active' %}
+                                                    <form method="post" action="{% url 'book-return' record.pk %}">
+                                                        {% csrf_token %}
+                                                        <button class="btn-return" type="submit">歸還</button>
+                                                    </form>
+                                                {% elif record.action == 'reserve' and record.status == 'active' %}
+                                                    <form method="post" action="{% url 'book-cancel' record.pk %}">
+                                                        {% csrf_token %}
+                                                        <button class="btn-return" type="submit">取消</button>
+                                                    </form>
+                                                {% else %}
+                                                    <span>已完成</span>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% else %}
+                        <div class="empty-state">目前沒有借閱或預約紀錄。</div>
+                    {% endif %}
+                </section>
+            </div>
+        </div>
+    </main>
+</div>
+{% include 'user/logout_fixed.html' %}
+<script>
+function switchTab(tabName) {
+    // 隐藏所有tab内容
+    document.getElementById('query-content').classList.remove('active');
+    document.getElementById('reserve-content').classList.remove('active');
+    
+    // 隐藏所有toolbar
+    document.getElementById('query-toolbar').style.display = 'none';
+    document.getElementById('reserve-toolbar').style.display = 'none';
+    
+    // 显示选中的tab内容和toolbar（按钮颜色保持不变）
+    if (tabName === 'query') {
+        document.getElementById('query-content').classList.add('active');
+        document.getElementById('query-toolbar').style.display = 'block';
+    } else if (tabName === 'reserve') {
+        document.getElementById('reserve-content').classList.add('active');
+        document.getElementById('reserve-toolbar').style.display = 'block';
+    }
+}
+</script>
+</body>
+</html>

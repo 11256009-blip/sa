@@ -1,0 +1,353 @@
+/* === 全域設定 === */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #e4e7ec;
+    color: #1f2937;
+}
+
+.layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* === 側邊欄 Sidebar === */
+/* 側邊欄 Sidebar */
+.sidebar {
+    width: 220px !important;
+    background: #1f3a72 !important;   /* 深藍色背景 */
+    color: white;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 標題 */
+.sidebar h1 {
+    font-size: 1.1rem;
+    margin: 24px 20px 16px;
+    letter-spacing: 0.05em;
+}
+
+.sidebar h1 a {
+    color: white;
+    text-decoration: none;
+    background: transparent;
+}
+
+/* 選單小標題 */
+.sidebar .menu-title {
+    margin: 0 20px 12px;
+    color: #ffffff;        /* 改成白色，避免藍底藍字不清楚 */
+    font-size: 0.95rem;
+}
+
+/* 選單連結 */
+.sidebar a {
+    text-decoration: none;
+    color: white;
+    display: block;
+    padding: 12px 20px;
+    margin: 4px 12px;
+    border-radius: 8px;
+    background: transparent; /* 移除任何斜線或底紋 */
+}
+
+/* 滑鼠移上去效果 */
+.sidebar a:hover {
+    background: rgba(157, 104, 104, 0.2); /* 淺白色透明背景 */
+}
+
+/* 撐開空間 */
+.sidebar .spacer {
+    flex: 1;
+}
+
+/* 登出按鈕 */
+.sidebar .logout {
+    margin: 16px 12px 24px;
+    padding: 12px 20px;
+    background: #ce6868;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.sidebar .logout:hover {
+    background: #ef4444;
+}
+/* === 主內容 Content === */
+.content {
+    flex: 1;
+    padding: 28px;
+}
+
+/* === 頂部 Top bar === */
+.top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.top h2 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.top .user-info {
+    font-size: 0.95rem;
+    color: #374151;
+}
+
+/* === 卡片 Card === */
+.card {
+    background: white;
+    border-radius: 18px;
+    padding: 28px;
+    box-shadow: 0 18px 32px rgba(15,23,42,0.08);
+}
+
+.card h1 {
+    margin-top: 0;
+    font-size: 2rem;
+}
+
+.card p {
+    margin: 12px 0 0;
+    color: #475569;
+    line-height: 1.7;
+}
+
+.home-img {
+    max-width: 100%;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    display: block;
+}
+
+/* === 固定登入按鈕 Login fixed === */
+.login-fixed {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    z-index: 9999;
+}
+
+.login-fixed a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    background: #2563eb;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 999px;
+    box-shadow: 0 8px 18px rgba(37,99,235,0.14);
+}
+
+.login-fixed a:hover {
+    background: #1e40af;
+}
+
+/* Shared app chrome */
+.layout {
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 220px !important;
+    min-width: 220px !important;
+    background: #1f3a72 !important;
+    color: #fff !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+.sidebar h1,
+.sidebar .brand {
+    height: auto !important;
+    margin: 12px 8px !important;
+    padding: 0 !important;
+    background: transparent !important;
+    display: block !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: #fff !important;
+    font-size: 0.9rem !important;
+    font-weight: normal !important;
+    letter-spacing: 0.03em !important;
+    text-align: center !important;
+    text-decoration: none !important;
+    line-height: 1.3 !important;
+    white-space: normal !important;
+}
+
+.sidebar h1 a,
+.sidebar .brand a {
+    color: #fff !important;
+    text-decoration: none !important;
+    background: transparent !important;
+    display: block !important;
+}
+
+.sidebar .menu-title,
+.sidebar .menu-label {
+    margin: 0 20px 12px !important;
+    padding: 0 !important;
+    background: transparent !important;
+    color: #a8c3ff !important;
+    font-weight: normal !important;
+    letter-spacing: 0.05em !important;
+    font-size: 0.95rem !important;
+}
+
+.sidebar a {
+    margin: 4px 12px !important;
+    padding: 12px 20px !important;
+    border-radius: 8px !important;
+    border-bottom: none !important;
+    background: transparent !important;
+    color: #fff !important;
+    display: block !important;
+    text-align: left !important;
+    text-decoration: none !important;
+    font-size: 1rem !important;
+    font-weight: normal !important;
+    letter-spacing: 0.05em !important;
+}
+
+.sidebar a:hover,
+.sidebar a.active {
+    background: rgba(255,255,255,0.12) !important;
+    text-decoration: none !important;
+}
+
+.top,
+.page-header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 20px !important;
+    min-height: 96px !important;
+    margin: -28px -28px 24px !important;
+    padding: 0 36px !important;
+    background: #fff !important;
+    border-bottom: 1px solid #d6d6d6 !important;
+    box-shadow: 0 1px 0 rgba(15,23,42,0.04) !important;
+}
+
+.content {
+    background: #d9d9d9 !important;
+}
+
+.top h2,
+.page-title,
+.app-titlebar h1 {
+    margin: 0 !important;
+    color: #111827 !important;
+    font-family: "Noto Serif TC", "PMingLiU", "MingLiU", serif !important;
+    font-size: 1.75rem !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.12em !important;
+    line-height: 1.2 !important;
+}
+
+.app-titlebar {
+    min-height: 96px;
+    padding: 0 52px;
+    background: #fff;
+    border-bottom: 1px solid #d6d6d6;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.login-titlebar {
+    justify-content: flex-end;
+}
+
+.app-page {
+    background: #d9d9d9;
+    min-height: 100vh;
+}
+
+.app-page .container,
+.app-page .card,
+.app-page .login-box {
+    margin-top: 32px;
+}
+
+.app-page .container,
+.app-page .login-box {
+    max-width: 560px;
+    margin-left: auto;
+    margin-right: auto;
+    background: #fff;
+    border-radius: 18px;
+    padding: 28px;
+    box-shadow: 0 18px 32px rgba(15,23,42,0.08);
+}
+
+.user-info,
+.page-user,
+.user-greeting {
+    margin-left: auto !important;
+    color: #111827 !important;
+    font-size: 1rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.08em !important;
+    white-space: nowrap !important;
+}
+
+.message-list {
+    margin-bottom: 18px;
+}
+
+.message {
+    padding: 14px 18px;
+    border-radius: 16px;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.message.success {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.message.error {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.home-card {
+    border-radius: 18px;
+    padding: 36px;
+    background: #fff;
+    box-shadow: 0 18px 32px rgba(15,23,42,0.08);
+}
+
+.home-image {
+    width: 100%;
+    margin: 0;
+}
+
+.home-image img {
+    width: 100%;
+    height: clamp(260px, 38vw, 430px);
+    display: block;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.home-card h1 {
+    margin: 26px 0 8px;
+    font-size: 2rem;
+}
+
+.home-card p {
+    margin: 0;
+    color: #475569;
+    line-height: 1.7;
+}

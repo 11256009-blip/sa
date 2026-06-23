@@ -1,0 +1,65 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>首頁 - 圖書館線上管理</title>
+    <style>
+        body { margin: 0; font-family: Arial, sans-serif; background: #e4e7ec; color: #1f2937; }
+        .layout { display: flex; min-height: 100vh; }
+        .sidebar { width: 220px; background: #1f3a72; color: white; display: flex; flex-direction: column; }
+        .sidebar h1 { font-size: 1.1rem; margin: 24px 20px 16px; letter-spacing: 0.05em; }
+        .sidebar h1 a { color: white; text-decoration: none; background: transparent; display: block; }
+        .sidebar .menu-title { margin: 0 20px 12px; color: #a8c3ff; font-size: 0.95rem; }
+        .sidebar a { text-decoration: none; color: white; display: block; padding: 12px 20px; margin: 4px 12px; border-radius: 8px; }
+        .sidebar a:hover { background: rgba(255,255,255,0.12); }
+        .sidebar a.active { background: rgba(255,255,255,0.18); }
+        .sidebar .spacer { flex: 1; }
+        .sidebar .logout { margin: 16px 12px 24px; padding: 12px 20px; background: #f87171; border-radius: 8px; text-align: center; }
+        .sidebar .logout:hover { background: #ef4444; }
+        .content { flex: 1; padding: 28px; }
+        .top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+        .top h2 { margin: 0; font-size: 1.5rem; }
+        .top .user-info { font-size: 0.95rem; color: #374151; }
+        .card { background: white; border-radius: 18px; padding: 28px; box-shadow: 0 18px 32px rgba(15,23,42,0.08); }
+        .card h1 { margin-top: 0; font-size: 2rem; }
+        .card p { margin: 12px 0 0; color: #475569; line-height: 1.7; }
+        .logout-fixed { position: fixed; bottom: 24px; right: 24px; }
+        .logout-fixed a { display: inline-block; padding: 12px 18px; background: #f87171; color: white; text-decoration: none; border-radius: 8px; box-shadow: 0 12px 24px rgba(248,113,113,0.2); }
+        .logout-fixed a:hover { background: #ef4444; }
+    </style>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body>
+<div class="layout">
+    <aside class="sidebar">
+        <h1><a href="/">圖書館管理系統</a></h1>
+        <p class="menu-title">選單</p>
+        {% if user.is_superuser %}
+            <a href="/users/">使用者管理</a>
+            <a href="{% url 'book-list' %}">館藏管理</a>
+            <a href="{% url 'book-borrow-return' %}">館藏查詢/預約</a>
+        {% else %}
+            <a href="{% url 'book-borrow-return' %}">館藏查詢/預約</a>
+            <a href="{% url 'user-profile' %}">我的帳戶</a>
+        {% endif %}
+        <div class="spacer"></div>
+    </aside>
+    <main class="content">
+        <div class="top">
+            <h2>首頁</h2>
+            <div class="user-info">{% if user.is_authenticated %}{{ user.username }}{% else %}訪客{% endif %} 您好！</div>
+        </div>
+                <div class="card home-card">
+                    <div class="home-image">
+                        <img id="home-move-img" src="{% static 'bookstore/images/home-library.png' %}" alt="圖書館首頁圖">
+                    </div>
+                    <h1>歡迎使用圖書館線上管理系統</h1>
+                    <p>請從左側選單選擇要進行的操作。</p>
+                </div>
+    </main>
+    {% include 'user/logout_fixed.html' %}
+</div>
+</body>
+</html>

@@ -1,0 +1,88 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>刪除使用者</title>
+    <style>
+        body { margin: 0; font-family: Arial, sans-serif; background: #e4e7ec; color: #1f2937; }
+        .layout { display: flex; min-height: 100vh; }
+        .sidebar { width: 220px; background: #1f3a72; color: white; display: flex; flex-direction: column; }
+        .sidebar h1 { font-size: 1.1rem; margin: 24px 20px 16px; letter-spacing: 0.05em; }
+        .sidebar h1 a { color: white; text-decoration: none; background: transparent; display: block; }
+        .sidebar .menu-title { margin: 0 20px 12px; color: #3362c8; font-size: 0.95rem; }
+        .sidebar a { text-decoration: none; color: white; display: block; padding: 12px 20px; margin: 4px 12px; border-radius: 8px; }
+        .sidebar a:hover { background: rgba(255,255,255,0.12); }
+        .sidebar a.active { background: rgba(255,255,255,0.18); }
+        .sidebar .spacer { flex: 1; }
+        .sidebar .logout { margin: 16px 12px 24px; padding: 12px 20px; background: #f87171; border-radius: 8px; text-align: center; }
+        .sidebar .logout:hover { background: #ef4444; }
+        .content { flex: 1; padding: 28px; }
+        .top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+        .top h2 { margin: 0; font-size: 1.5rem; }
+        .top .user-info { font-size: 0.95rem; color: #374151; }
+        .card { background: white; border-radius: 18px; padding: 28px; box-shadow: 0 18px 32px rgba(15,23,42,0.08); }
+        .delete-box { background: #fef2f2; border: 2px solid #fecaca; border-radius: 16px; padding: 28px; }
+        .delete-box h3 { margin-top: 0; color: #991b1b; }
+        .delete-box .warning { color: #dc2626; font-weight: bold; margin-bottom: 16px; }
+        .user-info-box { background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 10px; padding: 16px; margin-bottom: 24px; }
+        .user-info-box p { margin: 8px 0; }
+        .user-info-box strong { color: #1f2937; }
+        .actions { display: flex; gap: 12px; margin-top: 24px; }
+        .actions button { padding: 12px 20px; border: none; border-radius: 10px; color: white; cursor: pointer; font-size: 1rem; }
+        .actions .delete-btn { background: #dc2626; }
+        .actions .delete-btn:hover { background: #b91c1c; }
+        .actions .cancel-btn { background: #6b7280; }
+        .actions .cancel-btn:hover { background: #4b5563; }
+    </style>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body>
+<div class="layout">
+    <aside class="sidebar">
+        <h1><a href="/">圖書館管理系統</a></h1>
+        <p class="menu-title">選單</p>
+        {% if user.is_superuser %}
+            <a class="active" href="/users/">使用者管理</a>
+            <a href="{% url 'book-list' %}">館藏管理</a>
+            <a href="{% url 'book-borrow-return' %}">館藏查詢/預約</a>
+        {% else %}
+            <a href="{% url 'book-borrow-return' %}">館藏查詢/預約</a>
+            <a href="{% url 'user-profile' %}">我的帳戶</a>
+        {% endif %}
+        <div class="spacer"></div>
+    </aside>
+    <main class="content">
+        <div class="top">
+            <h2>刪除使用者</h2>
+            <div class="user-info">{% if user.is_authenticated %}{{ user.username }}{% else %}訪客{% endif %} 您好！</div>
+        </div>
+        <div class="card">
+            <div class="delete-box">
+                <h3>確認刪除使用者？</h3>
+                <p class="warning">⚠️ 此操作無法復原</p>
+                
+                <div class="user-info-box">
+                    <p><strong>帳號：</strong> {{ delete_user.username }}</p>
+                    <p><strong>姓名：</strong> {{ delete_user.first_name }}</p>
+                    <p><strong>Email：</strong> {{ delete_user.email }}</p>
+                    <p><strong>權限：</strong> {% if delete_user.is_superuser %}管理員{% elif delete_user.is_staff %}員工{% else %}一般使用者{% endif %}</p>
+                </div>
+
+                <p>刪除此使用者帳號將永久移除所有相關資料。請確認此操作。</p>
+
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    <div class="actions">
+                        <button type="submit" class="delete-btn">確認刪除</button>
+                        <button type="button" class="cancel-btn" onclick="window.location.href='{% url 'user-list' %}'">取消</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
+{% include 'user/logout_fixed.html' %}
+</body>
+</html>
