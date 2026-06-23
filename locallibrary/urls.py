@@ -31,13 +31,7 @@ urlpatterns = [
 
 from django.conf import settings
 from django.conf.urls.static import static
-<<<<<<< HEAD
 
-# During development, serve the project's shared static directory explicitly.
+# During development, serve the shared static directory explicitly.
 urlpatterns += static(settings.STATIC_URL, document_root=str(settings.BASE_DIR / 'static'))
-=======
-import os
-
-# During development, also serve the app's static directory explicitly
 urlpatterns += static(settings.STATIC_URL, document_root=str(settings.BASE_DIR / 'Bookstore' / 'static'))
->>>>>>> e4e8d20e8ac471e1e9abf354dacd46932d0ea566

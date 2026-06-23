@@ -56,11 +56,7 @@ ROOT_URLCONF = 'locallibrary.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-<<<<<<< HEAD
         'DIRS': [BASE_DIR / 'templates'],
-=======
-        'DIRS': [],
->>>>>>> e4e8d20e8ac471e1e9abf354dacd46932d0ea566
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -123,21 +119,11 @@ LOGIN_REDIRECT_URL = '/'
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = '/static/'
-<<<<<<< HEAD
 
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
 
 # Email Configuration
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # 開發模式下使用控制台輸出
-# 如需使用實際郵箱，請改為：
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = 'smtp.gmail.com'
-# EMAIL_PORT = 587
-# EMAIL_USE_TLS = True
-# EMAIL_HOST_USER = 'your-email@gmail.com'
-# EMAIL_HOST_PASSWORD = 'your-app-password'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 DEFAULT_FROM_EMAIL = 'noreply@library.local'
-=======
->>>>>>> e4e8d20e8ac471e1e9abf354dacd46932d0ea566

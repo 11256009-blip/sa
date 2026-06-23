@@ -20,12 +20,9 @@ class Book(models.Model):
 
 
 class BorrowRecord(models.Model):
-<<<<<<< HEAD
-=======
     DUE_DAYS = 7
     WARNING_DAYS = 2
 
->>>>>>> e4e8d20e8ac471e1e9abf354dacd46932d0ea566
     class Action(models.TextChoices):
         BORROW = 'borrow', '借閱'
         RESERVE = 'reserve', '預約'
@@ -53,15 +50,9 @@ class BorrowRecord(models.Model):
         return f"{self.user} {self.get_action_display()} {self.book.title}"
 
     def save(self, *args, **kwargs):
-<<<<<<< HEAD
-        # 新建借閱記錄時，自動設定預期歸還日期為 20 天後
-        if self.action == self.Action.BORROW and not self.due_date and not self.pk:
-            self.due_date = timezone.now() + timedelta(days=20)
-=======
-        # 新建借閱記錄時，自動設定預期歸還日期為 7 天後
+        # 新建借閱記錄時，自動設定預期歸還日期
         if self.action == self.Action.BORROW and not self.due_date and not self.pk:
             self.due_date = timezone.now() + timedelta(days=self.DUE_DAYS)
->>>>>>> e4e8d20e8ac471e1e9abf354dacd46932d0ea566
         super().save(*args, **kwargs)
 
     @property
@@ -72,20 +63,6 @@ class BorrowRecord(models.Model):
         return False
 
     @property
-<<<<<<< HEAD
-    def overdue_days(self):
-        """計算逾期天數"""
-        if self.status == self.Status.ACTIVE and self.due_date:
-            diff = timezone.now() - self.due_date
-            if diff.total_seconds() > 0:
-                return diff.days + 1
-        return 0
-
-    @property
-    def fine_amount(self):
-        """計算罰金（每天50元）"""
-        return self.overdue_days * 50
-=======
     def days_overdue(self):
         """回傳逾期天數，未逾期則為 0。"""
         if not self.is_overdue:
@@ -115,4 +92,3 @@ class BorrowRecord(models.Model):
         if self.is_due_soon:
             return 'due_soon'
         return 'normal'
->>>>>>> e4e8d20e8ac471e1e9abf354dacd46932d0ea566
