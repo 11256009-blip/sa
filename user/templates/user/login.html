@@ -1,0 +1,66 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>使用者登入</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f1f5f9; margin: 0; padding: 0; }
+        .login-box { width: 380px; margin: 80px auto; background: white; padding: 32px; border-radius: 12px; box-shadow: 0 12px 30px rgba(0,0,0,0.12); }
+        h1 { margin-top: 0; font-size: 1.8rem; color: #111827; }
+        .field { margin-bottom: 16px; }
+        label { display: block; margin-bottom: 8px; font-weight: bold; color: #374151; }
+        input { width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; }
+        button { width: 100%; background: #2563eb; color: white; border: none; padding: 12px; border-radius: 6px; font-size: 1rem; cursor: pointer; }
+        button:hover { background: #1d4ed8; }
+        .errorlist { color: #b91c1c; margin-bottom: 12px; }
+        .message { margin-bottom: 16px; padding: 10px 12px; background: #e0f2fe; color: #0369a1; border-radius: 6px; }
+    </style>
+</head>
+<body>
+<div class="login-box">
+    <h1>使用者登入</h1>
+
+    {% if form.non_field_errors %}
+        <div class="errorlist">{{ form.non_field_errors }}</div>
+    {% endif %}
+
+    <form method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ next }}" />
+        <div class="field">
+            {{ form.username.label_tag }}
+            {{ form.username }}
+            {% if form.username.errors %}
+                <div class="errorlist">{{ form.username.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="field">
+            {{ form.password.label_tag }}
+            {{ form.password }}
+            {% if form.password.errors %}
+                <div class="errorlist">{{ form.password.errors }}</div>
+            {% endif %}
+        </div>
+        <button type="submit" name="action" value="login">登入</button>
+    </form>
+    
+    <hr style="margin:20px 0;border:none;border-top:1px solid #e5e7eb;">
+
+    <h2 style="font-size:1.2rem;margin-bottom:12px;color:#111827;">註冊新帳號</h2>
+    <form method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+        {% for field in register_form %}
+            <div class="field">
+                {{ field.label_tag }}
+                {{ field }}
+                {% if field.errors %}
+                    <div class="errorlist">{{ field.errors }}</div>
+                {% endif %}
+            </div>
+        {% endfor %}
+        <button type="submit" name="action" value="register">註冊並登入</button>
+    </form>
+</div>
+</body>
+</html>

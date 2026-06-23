@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>館藏管理</title>
+    <style>
+        body { margin: 0; font-family: Arial, sans-serif; background: #e4e7ec; color: #1f2937; }
+        .layout { display: flex; min-height: 100vh; }
+        .sidebar { width: 220px; background: #1f3a72; color: white; display: flex; flex-direction: column; }
+        .sidebar h1 { font-size: 1.1rem; margin: 24px 20px 16px; letter-spacing: 0.05em; }
+        .sidebar .menu-title { margin: 0 20px 12px; color: #a8c3ff; font-size: 0.95rem; }
+        .sidebar a { text-decoration: none; color: white; display: block; padding: 12px 20px; margin: 4px 12px; border-radius: 8px; }
+        .sidebar a:hover { background: rgba(255,255,255,0.12); }
+        .sidebar a.active { background: rgba(255,255,255,0.18); }
+        .sidebar .spacer { flex: 1; }
+        .sidebar .logout { margin: 16px 12px 24px; padding: 12px 20px; background: #f87171; border-radius: 8px; text-align: center; }
+        .sidebar .logout:hover { background: #ef4444; }
+        .content { flex: 1; padding: 28px; }
+        .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+        .page-title { font-size: 1.8rem; letter-spacing: 0.12em; margin: 0; }
+        .page-user { color: #4b5563; font-size: 0.95rem; }
+        .main-card { background: #f8fafc; border-radius: 24px; padding: 28px; box-shadow: 0 18px 32px rgba(15,23,42,0.08); }
+        .tab-row { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 26px; }
+        .tab-button { flex: 1; min-width: 160px; padding: 12px 18px; border: 2px solid #d1d5db; border-radius: 14px; text-align: center; text-decoration: none; font-weight: 700; color: #374151; background: #fff; transition: all 0.2s ease; }
+        .tab-button.active { border-color: #84cc16; color: #111827; background: #f6fff0; }
+        .tab-button.warning { border-color: #fca5a5; color: #b91c1c; background: #fff5f5; }
+        .tab-button.info { border-color: #93c5fd; color: #1d4ed8; background: #eff6ff; }
+        .section-title { margin: 0 0 18px; font-size: 1.1rem; font-weight: 700; }
+        .toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
+        .search-wrap { flex: 1; min-width: 240px; display: flex; gap: 10px; }
+        .search-wrap input { flex: 1; padding: 12px 16px; border: 1px solid #d1d5db; border-radius: 999px; background: white; outline: none; }
+        .search-wrap input:focus { border-color: #2563eb; }
+        .btn-search, .btn-add { padding: 12px 18px; border-radius: 999px; border: none; cursor: pointer; font-weight: 700; }
+        .btn-search { background: #1f2937; color: white; }
+        .btn-add { background: #16a34a; color: white; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 16px 14px; text-align: left; border-bottom: 1px solid #e5e7eb; }
+        th { background: #edf2f7; color: #475569; font-weight: 700; }
+        tbody tr:hover { background: #f8fafc; }
+        .action-links { display: flex; gap: 10px; flex-wrap: wrap; }
+        .btn-edit, .btn-remove { display: inline-flex; align-items: center; justify-content: center; min-width: 88px; padding: 8px 16px; border-radius: 10px; border: none; color: white; cursor: pointer; font-weight: 700; transition: transform 0.15s ease, box-shadow 0.15s ease; }
+        .btn-edit:hover, .btn-remove:hover { transform: translateY(-1px); box-shadow: 0 8px 16px rgba(15,23,42,0.12); }
+        .btn-edit { background: #2563eb; }
+        .btn-remove { background: #dc2626; }
+        .empty-state { padding: 24px; border-radius: 18px; background: white; border: 1px solid #e2e8f0; color: #475569; text-align: center; }
+        .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.55); align-items: center; justify-content: center; padding: 20px; z-index: 50; }
+        .modal-backdrop.active { display: flex; }
+        .modal { background: white; border-radius: 24px; width: 100%; max-width: 480px; padding: 24px 24px; box-shadow: 0 24px 48px rgba(15,23,42,0.18); position: relative; }
+        .modal form { width: 100%; max-width: 420px; margin: 0 auto; }
+        .modal h3 { margin-top: 0; margin-bottom: 16px; font-size: 1.2rem; }
+        .modal label { display: block; margin-bottom: 8px; font-weight: 700; color: #334155; }
+        .modal input { width: 100%; max-width: 420px; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 12px; margin-bottom: 14px; }
+        .modal-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 12px; flex-wrap: wrap; }
+        .modal-actions button, .modal-actions a { padding: 12px 18px; border-radius: 999px; border: none; font-weight: 700; cursor: pointer; }
+        .modal-actions .save { background: #2563eb; color: white; }
+        .modal-actions .cancel { background: #6b7280; color: white; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
+        .modal-close { position: absolute; top: 18px; right: 18px; width: 36px; height: 36px; border: none; background: #f1f5f9; border-radius: 50%; cursor: pointer; color: #475569; font-size: 1rem; }
+        @media (max-width: 960px) { .content { padding: 20px; } .tab-row, .toolbar { flex-direction: column; align-items: stretch; } .sidebar { width: 200px; } }
+    </style>
+</head>
+<body>
+<div class="layout">
+    <aside class="sidebar">
+        <h1><a href="/">圖書館線上管理系統</a></h1>
+        <p class="menu-title">選單</p>
+        {% if user.is_superuser %}
+            <a href="/users/">使用者管理</a>
+            <a class="active" href="{% url 'book-list' %}">館藏管理</a>
+            <a href="{% url 'book-borrow-return' %}">借還書/預約</a>
+        {% else %}
+            <a href="{% url 'book-borrow-return' %}">借還書/預約</a>
+            <a href="{% url 'user-profile' %}">我的帳戶</a>
+        {% endif %}
+        <div class="spacer"></div>
+    </aside>
+    <main class="content">
+        <div class="page-header">
+            <div class="page-title">館藏管理</div>
+            <div class="page-user">管理員 你好！</div>
+        </div>
+        <div class="main-card">
+            <div class="tab-row">
+                <a class="tab-button active" href="{% url 'book-list' %}">書籍館藏管理</a>
+            </div>
+            <div class="section-title">書籍館藏管理</div>
+            <div class="toolbar">
+                <form method="get" class="search-wrap">
+                    <input type="text" name="q" value="{{ query }}" placeholder="搜尋書號(ISBN)或者書名..." aria-label="搜尋書籍">
+                    <button class="btn-search" type="submit">搜尋</button>
+                </form>
+                <button class="btn-add" type="button" id="open-add-modal">+ 新增書籍</button>
+            </div>
+            {% if books %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>書號(ISBN)</th>
+                            <th>書名</th>
+                            <th>分類</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for book in books %}
+                        <tr>
+                            <td>{{ book.isbn }}</td>
+                            <td>{{ book.title }}</td>
+                            <td>{{ book.category }}</td>
+                            <td>
+                                <div class="action-links">
+                                    <button class="btn-edit" type="button"
+                                        data-id="{{ book.pk }}"
+                                        data-isbn="{{ book.isbn|escape }}"
+                                        data-title="{{ book.title|escape }}"
+                                        data-category="{{ book.category|escape }}">
+                                        編輯
+                                    </button>
+                                    <a class="btn-remove" href="{% url 'book-delete' book.pk %}">下架</a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div class="empty-state">目前沒有任何書籍資料，請先新增書籍。</div>
+            {% endif %}
+        </div>
+    </main>
+</div>
+
+<div class="modal-backdrop" id="book-modal">
+    <div class="modal">
+        <button class="modal-close" id="book-modal-close" type="button">×</button>
+        <h3 id="modal-title">新增書籍</h3>
+        <form method="post" id="book-modal-form" action="{% url 'book-create' %}">
+            {% csrf_token %}
+            <label for="modal-isbn">書號(ISBN)</label>
+            <input id="modal-isbn" name="isbn" type="text" required>
+
+            <label for="modal-title-input">書名</label>
+            <input id="modal-title-input" name="title" type="text" required>
+
+            <label for="modal-category">分類</label>
+            <input id="modal-category" name="category" type="text">
+
+            <div class="modal-actions">
+                <button class="save" type="submit" id="modal-submit">儲存</button>
+                <a class="cancel" href="#" id="modal-cancel">取消</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+(function () {
+    const modal = document.getElementById('book-modal');
+    const modalClose = document.getElementById('book-modal-close');
+    const modalCancel = document.getElementById('modal-cancel');
+    const openAddBtn = document.getElementById('open-add-modal');
+    const modalTitle = document.getElementById('modal-title');
+    const modalForm = document.getElementById('book-modal-form');
+    const isbnInput = document.getElementById('modal-isbn');
+    const titleInput = document.getElementById('modal-title-input');
+    const categoryInput = document.getElementById('modal-category');
+    const submitButton = document.getElementById('modal-submit');
+    const editButtons = document.querySelectorAll('.btn-edit');
+
+    function openModal(isEdit, book) {
+        modal.classList.add('active');
+        if (isEdit) {
+            modalTitle.textContent = '編輯書籍';
+            modalForm.action = '/books/' + book.id + '/edit/';
+            isbnInput.value = book.isbn;
+            titleInput.value = book.title;
+            categoryInput.value = book.category;
+            submitButton.textContent = '更新';
+        } else {
+            modalTitle.textContent = '新增書籍';
+            modalForm.action = '{% url "book-create" %}';
+            isbnInput.value = '';
+            titleInput.value = '';
+            categoryInput.value = '';
+            submitButton.textContent = '儲存';
+        }
+    }
+
+    function closeModal() {
+        modal.classList.remove('active');
+    }
+
+    openAddBtn.addEventListener('click', function () {
+        openModal(false, {});
+    });
+
+    modalClose.addEventListener('click', closeModal);
+    modalCancel.addEventListener('click', function (event) {
+        event.preventDefault();
+        closeModal();
+    });
+
+    window.addEventListener('click', function (event) {
+        if (event.target === modal) {
+            closeModal();
+        }
+    });
+
+    editButtons.forEach(function (button) {
+        button.addEventListener('click', function () {
+            const book = {
+                id: this.dataset.id,
+                isbn: this.dataset.isbn,
+                title: this.dataset.title,
+                category: this.dataset.category || ''
+            };
+            openModal(true, book);
+        });
+    });
+})();
+</script>
+{% include 'user/logout_fixed.html' %}
+</body>
+</html>

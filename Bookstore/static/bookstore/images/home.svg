@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="400" viewBox="0 0 1200 400">
+  <rect width="1200" height="400" fill="#1f3a72" rx="20"/>
+  <g fill="#fff" font-family="Arial, sans-serif" font-size="40">
+    <text x="60" y="120">圖書館管理</text>
+    <text x="60" y="180" font-size="24">歡迎使用線上管理系統</text>
+  </g>
+  <g transform="translate(920,60)">
+    <rect x="0" y="0" width="200" height="280" rx="12" fill="#e4e7ec"/>
+    <text x="22" y="160" fill="#1f3a72" font-size="20" font-family="Arial">封面示意</text>
+  </g>
+</svg>

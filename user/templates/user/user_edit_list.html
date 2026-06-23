@@ -1,0 +1,89 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>編輯使用者</title>
+    <style>
+        body { margin: 0; font-family: Arial, sans-serif; background: #e4e7ec; color: #1f2937; }
+        .layout { display: flex; min-height: 100vh; }
+        .sidebar { width: 220px; background: #1f3a72; color: white; display: flex; flex-direction: column; }
+        .sidebar h1 { font-size: 1.1rem; margin: 24px 20px 16px; letter-spacing: 0.05em; }
+        .sidebar .menu-title { margin: 0 20px 12px; color: #a8c3ff; font-size: 0.95rem; }
+        .sidebar a { text-decoration: none; color: white; display: block; padding: 12px 20px; margin: 4px 12px; border-radius: 8px; }
+        .sidebar a:hover { background: rgba(255,255,255,0.12); }
+        .sidebar .spacer { flex: 1; }
+        .sidebar .logout { margin: 16px 12px 24px; padding: 12px 20px; background: #f87171; border-radius: 8px; text-align: center; }
+        .sidebar .logout:hover { background: #ef4444; }
+        .content { flex: 1; padding: 28px; }
+        .top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+        .top h2 { margin: 0; font-size: 1.5rem; }
+        .top .user-info { font-size: 0.95rem; color: #374151; }
+        .card { background: white; border-radius: 18px; padding: 28px; box-shadow: 0 18px 32px rgba(15,23,42,0.08); }
+        .button-row { display: flex; gap: 12px; margin-bottom: 24px; }
+        .button-row a { padding: 12px 20px; border-radius: 10px; font-weight: bold; text-decoration: none; color: white; }
+        .btn-add { background: #22c55e; }
+        .btn-delete { background: #dc2626; }
+        .btn-edit { background: #0284c7; }
+        .btn-role { background: #7c3aed; }
+        .card table { width: 100%; border-collapse: collapse; }
+        .card th, .card td { padding: 12px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+        .card th { background: #f1f5f9; }
+        .action-link { display: inline-block; padding: 8px 14px; background: #0284c7; color: white; border-radius: 8px; text-decoration: none; }
+    </style>
+</head>
+<body>
+<div class="layout">
+    <aside class="sidebar">
+        <h1><a href="/">圖書館線上管理系統</a></h1>
+        <p class="menu-title">選單</p>
+        {% if user.is_superuser %}
+            <a href="/users/">使用者管理</a>
+            <a href="{% url 'book-list' %}">館藏管理</a>
+            <a href="{% url 'book-borrow-return' %}">借還書/預約</a>
+        {% else %}
+            <a href="{% url 'book-borrow-return' %}">借還書/預約</a>
+            <a href="{% url 'user-profile' %}">我的帳戶</a>
+        {% endif %}
+        <div class="spacer"></div>
+    </aside>
+    <main class="content">
+        <div class="top">
+            <h2>編輯使用者</h2>
+            <div class="user-info">當前登入：{% if user.is_authenticated %}{{ user.username }}{% else %}尚未登入{% endif %}</div>
+        </div>
+        <div class="button-row">
+            <a class="btn-add" href="/users/">新增使用者</a>
+            <a class="btn-edit" href="{% url 'user-list' %}">編輯使用者</a>
+        </div>
+        <div class="card">
+            <h3>目前使用者清單</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>帳號</th>
+                        <th>姓名</th>
+                        <th>Email</th>
+                        <th>權限</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for u in users %}
+                        <tr>
+                            <td>{{ u.username }}</td>
+                            <td>{{ u.first_name }}</td>
+                            <td>{{ u.email }}</td>
+                            <td>{% if u.is_superuser %}管理員{% elif u.is_staff %}員工{% else %}一般使用者{% endif %}</td>
+                            <td><a class="action-link" href="{% url 'user-edit' user_id=u.id %}">編輯</a></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+        {% include 'user/logout_fixed.html' %}
+</div>
+</body>
+</html>

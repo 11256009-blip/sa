@@ -10,14 +10,20 @@ from .views import (
     reserve_book_view,
     return_book_view,
     cancel_reservation_view,
+<<<<<<< HEAD
     overdue_management_view,
+=======
+>>>>>>> e4e8d20e8ac471e1e9abf354dacd46932d0ea566
 )
 
 urlpatterns = [
     path('', book_list_view, name='book-list'),
     path('new/', book_create_view, name='book-create'),
     path('borrow-return/', borrow_return_view, name='book-borrow-return'),
+<<<<<<< HEAD
     path('overdue/', overdue_management_view, name='overdue-management'),
+=======
+>>>>>>> e4e8d20e8ac471e1e9abf354dacd46932d0ea566
     path('<int:pk>/borrow/', borrow_book_view, name='book-borrow'),
     path('<int:pk>/reserve/', reserve_book_view, name='book-reserve'),
     path('record/<int:pk>/return/', return_book_view, name='book-return'),

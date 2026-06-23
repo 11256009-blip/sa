@@ -1,0 +1,102 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>使用者管理</title>
+    <style>
+        body { margin: 0; font-family: Arial, sans-serif; background: #e4e7ec; color: #1f2937; }
+        .layout { display: flex; min-height: 100vh; }
+        .sidebar { width: 220px; background: #1f3a72; color: white; display: flex; flex-direction: column; }
+        .sidebar h1 { font-size: 1.1rem; margin: 24px 20px 16px; letter-spacing: 0.05em; }
+        .sidebar .menu-title { margin: 0 20px 12px; color: #a8c3ff; font-size: 0.95rem; }
+        .sidebar a { text-decoration: none; color: white; display: block; padding: 12px 20px; margin: 4px 12px; border-radius: 8px; }
+        .sidebar a:hover { background: rgba(255,255,255,0.12); }
+        .sidebar .spacer { flex: 1; }
+        .sidebar .logout { margin: 16px 12px 24px; padding: 12px 20px; background: #f87171; border-radius: 8px; text-align: center; }
+        .sidebar .logout:hover { background: #ef4444; }
+        .content { flex: 1; padding: 28px; }
+        .top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+        .top h2 { margin: 0; font-size: 1.5rem; }
+        .top .user-info { font-size: 0.95rem; color: #374151; }
+        .card { background: white; border-radius: 18px; padding: 28px; box-shadow: 0 18px 32px rgba(15,23,42,0.08); }
+        .button-row { display: flex; gap: 12px; margin-bottom: 24px; }
+        .button-row a { padding: 12px 20px; border-radius: 10px; font-weight: bold; text-decoration: none; color: white; }
+        .btn-add { background: #22c55e; }
+        .btn-delete { background: #dc2626; }
+        .btn-edit { background: #0284c7; }
+        .btn-role { background: #7c3aed; }
+        .form-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 28px; }
+        .form-box h3 { margin-top: 0; }
+        .field { margin-bottom: 18px; }
+        .field label { display: block; margin-bottom: 8px; font-weight: bold; }
+        .field input, .field select { width: 100%; padding: 12px 14px; border: 1px solid #cbd5e1; border-radius: 10px; }
+        .actions { display: flex; gap: 12px; margin-top: 18px; }
+        .actions button { padding: 12px 20px; border: none; border-radius: 10px; color: white; cursor: pointer; }
+        .actions .save { background: #16a34a; }
+        .actions .cancel { background: #6b7280; }
+        .messages { margin-bottom: 16px; color: #0b7a3f; }
+        .note { margin-bottom: 18px; color: #475569; }
+    </style>
+</head>
+<body>
+<div class="layout">
+    <aside class="sidebar">
+        <h1><a href="/">圖書館線上管理系統</a></h1>
+        <p class="menu-title">選單</p>
+        {% if user.is_superuser %}
+            <a href="/users/">使用者管理</a>
+            <a href="{% url 'book-list' %}">館藏管理</a>
+            <a href="{% url 'book-borrow-return' %}">借還書/預約</a>
+        {% else %}
+            <a href="{% url 'book-borrow-return' %}">借還書/預約</a>
+            <a href="{% url 'user-profile' %}">我的帳戶</a>
+        {% endif %}
+        <div class="spacer"></div>
+    </aside>
+    <main class="content">
+        <div class="top">
+            <h2>使用者管理</h2>
+            <div class="user-info">當前登入：{% if user.is_authenticated %}{{ user.username }}{% else %}尚未登入{% endif %}</div>
+        </div>
+        <div class="button-row">
+            <a class="btn-add" href="/users/">新增使用者</a>
+            <a class="btn-edit" href="{% url 'user-list' %}">編輯使用者</a>
+        </div>
+        <div class="card">
+            <div class="form-box">
+                <h3>新增使用者</h3>
+                <p class="note">請輸入新使用者的基本資訊，完成後點擊建立帳號。</p>
+
+                {% if messages %}
+                    <div class="messages">
+                        {% for message in messages %}
+                            <p>{{ message }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    {% for field in form %}
+                        <div class="field">
+                            {{ field.label_tag }}
+                            {{ field }}
+                            {% if field.errors %}
+                                <div class="errorlist" style="color:#b91c1c; margin-top:6px;">{{ field.errors|striptags }}</div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                    <div class="actions">
+                        <button type="submit" class="save">建立帳號</button>
+                        <button type="button" class="cancel" onclick="window.location.href='/'">取消</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
+{% include 'user/logout_fixed.html' %}
+</body>
+</html>

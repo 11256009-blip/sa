@@ -20,6 +20,12 @@ class Book(models.Model):
 
 
 class BorrowRecord(models.Model):
+<<<<<<< HEAD
+=======
+    DUE_DAYS = 7
+    WARNING_DAYS = 2
+
+>>>>>>> e4e8d20e8ac471e1e9abf354dacd46932d0ea566
     class Action(models.TextChoices):
         BORROW = 'borrow', '借閱'
         RESERVE = 'reserve', '預約'
@@ -47,9 +53,15 @@ class BorrowRecord(models.Model):
         return f"{self.user} {self.get_action_display()} {self.book.title}"
 
     def save(self, *args, **kwargs):
+<<<<<<< HEAD
         # 新建借閱記錄時，自動設定預期歸還日期為 20 天後
         if self.action == self.Action.BORROW and not self.due_date and not self.pk:
             self.due_date = timezone.now() + timedelta(days=20)
+=======
+        # 新建借閱記錄時，自動設定預期歸還日期為 7 天後
+        if self.action == self.Action.BORROW and not self.due_date and not self.pk:
+            self.due_date = timezone.now() + timedelta(days=self.DUE_DAYS)
+>>>>>>> e4e8d20e8ac471e1e9abf354dacd46932d0ea566
         super().save(*args, **kwargs)
 
     @property
@@ -60,6 +72,7 @@ class BorrowRecord(models.Model):
         return False
 
     @property
+<<<<<<< HEAD
     def overdue_days(self):
         """計算逾期天數"""
         if self.status == self.Status.ACTIVE and self.due_date:
@@ -72,3 +85,34 @@ class BorrowRecord(models.Model):
     def fine_amount(self):
         """計算罰金（每天50元）"""
         return self.overdue_days * 50
+=======
+    def days_overdue(self):
+        """回傳逾期天數，未逾期則為 0。"""
+        if not self.is_overdue:
+            return 0
+        return (timezone.now().date() - self.due_date.date()).days
+
+    @property
+    def days_until_due(self):
+        """回傳距離到期的天數；已逾期或沒有到期日則回傳 None。"""
+        if self.status != self.Status.ACTIVE or not self.due_date or self.is_overdue:
+            return None
+        return (self.due_date.date() - timezone.now().date()).days
+
+    @property
+    def is_due_soon(self):
+        """檢查是否即將到期。"""
+        days_left = self.days_until_due
+        return days_left is not None and days_left <= self.WARNING_DAYS
+
+    @property
+    def warning_level(self):
+        """提供後台和管理指令共用的預警等級。"""
+        if self.action != self.Action.BORROW or self.status != self.Status.ACTIVE:
+            return 'none'
+        if self.is_overdue:
+            return 'overdue'
+        if self.is_due_soon:
+            return 'due_soon'
+        return 'normal'
+>>>>>>> e4e8d20e8ac471e1e9abf354dacd46932d0ea566
